@@ -8,7 +8,23 @@
 </head>
 <body>
   <div id="app" class="container">
-    <div class="row d-flex mb-3 align-items-center" v-for="item in products">
+    <nav class="navbar navbar-light bg-light fixed-top p-0">
+      <div class="navbar-text ml-auto p-2">
+        <b>Cart: </b>
+        <span class="badge badge-pill badge-success">{{ cart.length }}</span>
+      </div>
+    </nav>
+    <div class="form-inline mr-auto mt-5">
+      <label for="maxText" class="font-weight-bold mr-2">Max</label>
+      <input id="maxText" type="text" class="form-control w-25" v-model="maximum">
+    </div>
+    <input type="range" class="custom-range" min="0" max="200" v-model="maximum">
+    <div 
+      class="row d-flex mb-3 align-items-center"
+      v-for="item in products"
+      v-if="parseInt(item.price) <= maximum"
+    >
+      <div class="btn btn-info" v-on:click="addItem(item)">+</div>
       <div class="col-sm-4">
         <img class="img-fluid" :src="item.image" :alt="item.name">
       </div>
@@ -25,27 +41,23 @@
     var app = new Vue({
       el: '#app',
       data: {
-        products: [
-          {
-            name: 'Bamboo Thermal Ski Coat',
-            description: 'You\'ll be the most environmentally concious skier on the slops - and the most stylish.',
-            image: 'https://hplussport.com/wp-content/uploads/2016/12/ski-coat_LYNDA_29940.jpg',
-            price: 99,
-          },
-          {
-            name: 'Caravan Ski Coat',
-            description: 'blab ha asfnb asfd asdf askdkj ashioas uopa kjhd hakj; as;fhasoi.',
-            image: 'https://hplussport.com/wp-content/uploads/2016/12/ski-coat_LYNDA_29940.jpg',
-            price: 199,
-          },
-          {
-            name: 'Apple Winter Ski Coat',
-            description: 'aa asdfkas ekfsak dfa sjkdas hfa sh sda hkdsf hklsda klhds hksd khdsf',
-            image: 'https://hplussport.com/wp-content/uploads/2016/12/ski-coat_LYNDA_29940.jpg',
-            price: 149,
-          }
-        ],
-      }
+        maximum: 75,
+        products: null,
+        cart: [],
+      },
+      methods: {
+        addItem: function(product) {
+          this.cart.push(product);
+        }
+      },
+      mounted: function() {
+          fetch('https://hplussport.com/api/products/order/price')
+          .then(response => response.json())
+          .then(data => {
+            console.log(data);
+            this.products = data;
+          });
+        },
     })
   </script>
 </body>
