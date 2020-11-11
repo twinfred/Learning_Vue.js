@@ -26,7 +26,13 @@
     >
       <div class="btn btn-info" v-on:click="addItem(item)">+</div>
       <div class="col-sm-4">
-        <img class="img-fluid" :src="item.image" :alt="item.name">
+        <img 
+          v-bind="{
+            class: item.imageClass,
+            src: item.image,
+            alt: item.name,
+          }"
+        >
       </div>
       <div class="col">
         <h3 class="text-info">{{ item.name }}</h3>
@@ -54,6 +60,9 @@
           fetch('https://hplussport.com/api/products/order/price')
           .then(response => response.json())
           .then(data => {
+            data.forEach(element => {
+              element.imageClass = 'img-fluid';
+            });
             console.log(data);
             this.products = data;
           });
