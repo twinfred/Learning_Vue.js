@@ -14,11 +14,13 @@
         <span class="badge badge-pill badge-success">{{ cart.length }}</span>
       </div>
     </nav>
-    <div class="form-inline mr-auto mt-5">
-      <label for="maxText" class="font-weight-bold mr-2">Max</label>
-      <input id="maxText" type="text" class="form-control w-25" v-model="maximum">
+    <h1 class="mt-5">Tim's Vue Store</h1>
+    <div :class="maxPriceClasses + ' ' + sliderState">
+      <label for="maxText" class="font-weight-bold">Max:</label>
+      <input id="maxText" type="number" class="form-control mx-2" :style="numberInputClasses" v-model="maximum">
+      <input type="range" class="custom-range" min="0" max="200" v-model="maximum">
     </div>
-    <input type="range" class="custom-range" min="0" max="200" v-model="maximum">
+    
     <div 
       class="row d-flex mb-3 align-items-center"
       v-for="item in products"
@@ -50,6 +52,12 @@
         maximum: 75,
         products: null,
         cart: [],
+        maxPriceClasses: 'align-items-center green-text',
+        numberInputClasses: {
+          width: '100px',
+          'text-align': 'center',
+        },
+        sliderStatus: true,
       },
       methods: {
         addItem: function(product) {
@@ -67,7 +75,12 @@
             this.products = data;
           });
         },
-    })
+      computed: {
+        sliderState: function() {
+          return this.sliderStatus ? 'd-flex' : 'd-none';
+        },
+      }
+    });
   </script>
 </body>
 </html>
