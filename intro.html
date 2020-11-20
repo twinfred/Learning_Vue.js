@@ -6,6 +6,17 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <script src="https://kit.fontawesome.com/9c8a91e546.js" crossorigin="anonymous"></script>
   <title>Document</title>
+  <style>
+    .fade-enter,
+    .fade-leave-to {
+      opacity: 0;
+    }
+
+    .fade-enter-active,
+    .fade-leave-active {
+      transition: all 1s ease-in-out;
+    }
+  </style>
 </head>
 <body>
   <div id="app" class="container">
@@ -21,12 +32,15 @@
       </div>
     </nav>
     <h1 class="mt-5">Tim's Vue Store</h1>
-    <div :class="maxPriceClasses + ' ' + sliderState">
-      <label for="maxText" class="font-weight-bold">Max:</label>
-      <input id="maxText" type="number" class="form-control mx-2" :style="numberInputClasses" v-model="maximum">
-      <input type="range" class="custom-range" min="0" max="200" v-model="maximum">
-    </div>
-    
+    <transition name="fade">
+      <div v-if="sliderStatus">
+        <div :class="maxPriceClasses + ' ' + sliderState">
+          <label for="maxText" class="font-weight-bold">Max:</label>
+          <input id="maxText" type="number" class="form-control mx-2" :style="numberInputClasses" v-model="maximum">
+          <input type="range" class="custom-range" min="0" max="200" v-model="maximum">
+        </div>
+      </div>
+    </transition>
     <div 
       class="row d-flex mb-3 align-items-center"
       v-for="item in products"
