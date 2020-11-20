@@ -17,6 +17,7 @@
       transition: all 1s ease-in-out;
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 </head>
 <body>
   <div id="app" class="container">
@@ -44,12 +45,19 @@
       </div>
     </transition>
 
-    <transition-group name="fade" tag="div">
+    <transition-group
+      name="fade"
+      tag="div"
+      @before-enter="beforeEnter"
+      @enter="enter"
+      @leave="leave"
+    >
       <div
-        class="row d-flex mb-3 align-items-center"
-        v-for="item in products"
+        class="row d-none mb-3 align-items-center"
+        v-for="(item, index) in products"
         :key="item.id"
         v-if="parseInt(item.price) <= maximum"
+        :data-index="index"
       >
         <div class="btn btn-info" v-on:click="addItem(item)">+</div>
         <div class="col-sm-4">
@@ -88,7 +96,22 @@
       methods: {
         addItem: function(product) {
           this.cart.push(product);
-        }
+        },
+        beforeEnter: function(element) {
+          element.className='d-none';
+        },
+        enter: function(element) {
+          var delay = element.dataset.index * 100;
+          setTimeout(function() {
+            element.className = 'row d-flex mb-3 align-items-center animate__animated animate__fadeInUp'
+          }, delay);
+        },
+        leave: function(element) {
+          var delay = element.dataset.index * 100;
+          setTimeout(function() {
+            element.className = 'row d-flex mb-3 align-items-center animate__animated animate__flipOutX'
+          }, delay);
+        },
       },
       mounted: function() {
           fetch('https://hplussport.com/api/products/order/price')
