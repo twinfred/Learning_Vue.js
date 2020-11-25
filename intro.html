@@ -38,7 +38,7 @@
                 <span class="badge badge-pill badge-warning align-text-top mr-1">{{ item.quantity }}</span>
                 {{ item.product.name }}
                 <b>{{ (item.product.price * item.quantity) | currency }}</b>
-                <button href="#" @click.stop="deleteItem(index)" class="btn badge badge-danger text-white">-</button>
+                <button href="#" @click.stop="deleteItem(index)" class="btn badge badge-danger text-white" :aria-label="'remove one ' + item.product.name + ' from cart'">-</button>
               </div>
             </div>
           </div>
@@ -72,7 +72,7 @@
         v-if="parseInt(item.price) <= maximum"
         :data-index="index"
       >
-        <button class="btn btn-info" @click.stop="addItem(item)">+</button>
+        <button class="btn btn-info" @click.stop="addItem(item)" :aria-label="'add ' + item.name + ' to cart'">+</button>
         <div class="col-sm-4">
           <img 
             v-bind="{
