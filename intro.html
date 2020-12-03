@@ -30,12 +30,7 @@
           <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="cartDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="badge badge-pill badge-light">{{ cartQuantity }}</span>
             <i class="fa fa-shopping-cart mx-2"></i>
-            <price
-              :value="cartTotal"
-              :conversion=".87"
-              :prefix="'&euro;'"
-            >
-            </price>
+            <price :value="cartTotal"></price>
           </button>
           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="cartDropdown">
             <div v-for="(item, index) in cart" :key="index">
@@ -43,12 +38,7 @@
                 <span class="badge badge-pill badge-warning align-text-top mr-1">{{ item.quantity }}</span>
                 {{ item.product.name }}
                 <b>
-                  <price
-                    :value="Number(item.product.price * item.quantity)"
-                    :conversion=".87"
-                    :prefix="'&euro;'"
-                  >
-                  </price>  
+                  <price :value="Number(item.product.price * item.quantity)"></price>  
                 </b>
                 <button href="#" @click.stop="deleteItem(index)" class="btn badge badge-danger text-white" :aria-label="'remove one ' + item.product.name + ' from cart'">-</button>
               </div>
@@ -70,43 +60,8 @@
       </div>
     </transition>
 
-    <transition-group
-      name="fade"
-      tag="div"
-      @before-enter="beforeEnter"
-      @enter="enter"
-      @leave="leave"
-    >
-      <div
-        class="row d-none mb-3 align-items-center"
-        v-for="(item, index) in products"
-        :key="item.id"
-        v-if="parseInt(item.price) <= maximum"
-        :data-index="index"
-      >
-        <button class="btn btn-info" @click.stop="addItem(item)" :aria-label="'add ' + item.name + ' to cart'">+</button>
-        <div class="col-sm-4">
-          <img 
-            v-bind="{
-              class: item.imageClass,
-              src: item.image,
-              alt: item.name,
-            }"
-          >
-        </div>
-        <div class="col">
-          <h3 class="text-info">{{ item.name }}</h3>
-          <p class="mb-0">{{ item.description }}</p>
-          <div class="h5 float-right">
-            <price
-              :conversion=".87"
-              :prefix="'&euro;'"
-              :value="Number(item.price)">
-            </price>
-          </div>
-        </div>
-      </div>
-    </transition-group>
+    <product-list :products="products" :maximum="maximum" @add-item="addItem"></product-list>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.js"></script>
@@ -131,6 +86,62 @@
         },
         value: Number},
       template: '<span>{{ this.prefix + Number.parseFloat(this.value * this.conversion).toFixed(this.precision) }}</span>',
+    });
+
+    Vue.component('product-list', {
+      props: ['products', 'maximum'],
+      template: `
+      <transition-group
+        name="fade"
+        tag="div"
+        @before-enter="beforeEnter"
+        @enter="enter"
+        @leave="leave"
+      >
+        <div
+          class="row d-none mb-3 align-items-center"
+          v-for="(item, index) in products"
+          :key="item.id"
+          v-if="parseInt(item.price) <= maximum"
+          :data-index="index"
+        >
+          <button class="btn btn-info" @click.stop="$emit('add-item', item)" :aria-label="'add ' + item.name + ' to cart'">+</button>
+          <div class="col-sm-4">
+            <img 
+              v-bind="{
+                class: item.imageClass,
+                src: item.image,
+                alt: item.name,
+              }"
+            >
+          </div>
+          <div class="col">
+            <h3 class="text-info">{{ item.name }}</h3>
+            <p class="mb-0">{{ item.description }}</p>
+            <div class="h5 float-right">
+              <price :value="Number(item.price)"></price>
+            </div>
+          </div>
+        </div>
+      </transition-group>
+      `,
+      methods: {
+        beforeEnter: function(element) {
+          element.className='d-none';
+        },
+        enter: function(element) {
+          var delay = element.dataset.index * 100;
+          setTimeout(function() {
+            element.className = 'row d-flex mb-3 align-items-center animate__animated animate__fadeInUp'
+          }, delay);
+        },
+        leave: function(element) {
+          var delay = element.dataset.index * 100;
+          setTimeout(function() {
+            element.className = 'row d-flex mb-3 align-items-center animate__animated animate__flipOutX'
+          }, delay);
+        },
+      }
     });
 
     var app = new Vue({
@@ -170,21 +181,6 @@
           } else {
             this.cart.splice(id, 1);
           }
-        },
-        beforeEnter: function(element) {
-          element.className='d-none';
-        },
-        enter: function(element) {
-          var delay = element.dataset.index * 100;
-          setTimeout(function() {
-            element.className = 'row d-flex mb-3 align-items-center animate__animated animate__fadeInUp'
-          }, delay);
-        },
-        leave: function(element) {
-          var delay = element.dataset.index * 100;
-          setTimeout(function() {
-            element.className = 'row d-flex mb-3 align-items-center animate__animated animate__flipOutX'
-          }, delay);
         },
       },
       mounted: function() {
